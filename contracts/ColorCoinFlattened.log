@@ -1,0 +1,42 @@
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/ColorCoin.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/ColorCoinWithPixel.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/ColorCoinBase.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/lib/Suspendable.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/lib/Base20.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/lib/SafeMath.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/ColorCoinWithPixel.sol
+2019/02/01 21:40:46 pre processing ../../dev/col20/contracts/lib/ERC20.sol
+2019/02/01 21:40:46 Suspendable.sol remains unresolved
+2019/02/01 21:40:46 Base20.sol remains unresolved
+2019/02/01 21:40:46 Resolved  ERC20.sol
+2019/02/01 21:40:46 Resolved  SafeMath.sol
+2019/02/01 21:40:46 Resolved  ColorCoinWithPixel.sol
+2019/02/01 21:40:46 ColorCoin.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinBase.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Written ColorCoinWithPixel.sol (0) lines
+2019/02/01 21:40:46 Resolved  ColorCoin.sol
+2019/02/01 21:40:46 ColorCoinBase.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Suspendable.sol remains unresolved
+2019/02/01 21:40:46 Base20.sol remains unresolved
+2019/02/01 21:40:46 Written ERC20.sol (29) lines
+2019/02/01 21:40:46 Written SafeMath.sol (60) lines
+2019/02/01 21:40:46 ColorCoinBase.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Suspendable.sol remains unresolved
+2019/02/01 21:40:46 Resolved  Base20.sol
+2019/02/01 21:40:46 Written ColorCoin.sol (26) lines
+2019/02/01 21:40:46 ColorCoinBase.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Suspendable.sol remains unresolved
+2019/02/01 21:40:46 Written Base20.sol (115) lines
+2019/02/01 21:40:46 ColorCoinBase.sol remains unresolved
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Resolved  Suspendable.sol
+2019/02/01 21:40:46 Written Suspendable.sol (117) lines
+2019/02/01 21:40:46 Resolved  ColorCoinBase.sol
+2019/02/01 21:40:46 ColorCoinWithPixel.sol remains unresolved
+2019/02/01 21:40:46 Written ColorCoinBase.sol (323) lines
+2019/02/01 21:40:46 Resolved  ColorCoinWithPixel.sol
+2019/02/01 21:40:46 Written ColorCoinWithPixel.sol (123) lines
