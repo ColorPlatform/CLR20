@@ -2,7 +2,7 @@
 
 ERC20 token for Color Coin(CLR)
 
-https://etherscan.io/token/0x2396fbc0e2e3ae4b7206ebdb5706e2a5920349cb?a=0xca732469b336831fcbe82bf96206a8f5403b2e9c
+https://etherscan.io/token/0x2396fbc0e2e3ae4b7206ebdb5706e2a5920349cb
 
 ## Tests
 
