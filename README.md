@@ -1,6 +1,6 @@
 # COL20
 
-ERC20 token for Color Coin
+ERC20 token for Color Coin(CLR)
 
 ## Tests
 
