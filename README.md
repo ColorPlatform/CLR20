@@ -13,4 +13,4 @@ npm install -g truffle
 ```
 truffle test
 ```
-##### 4. Check all 128 test have passed  
+##### 4. Check all 128 tests have passed  
