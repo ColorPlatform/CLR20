@@ -1,4 +1,4 @@
-# COL20
+# CLR20
 
 ERC20 token for Color Coin(CLR)
 
