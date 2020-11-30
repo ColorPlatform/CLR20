@@ -24,9 +24,10 @@ contract ColorCoin is ColorCoinWithPixel {
   constructor(uint256 _totalSupply,
     address payable _founder,
     address _admin,
+    uint256 _mintSpeed,
     uint256 _pixelCoinSupply,
     address _pixelAccount
-  ) public ColorCoinWithPixel (_totalSupply, _founder, _admin, _pixelCoinSupply, _pixelAccount)
+  ) public ColorCoinWithPixel (_totalSupply, _founder, _admin, _mintSpeed, _pixelCoinSupply, _pixelAccount)
   {
   }
 }

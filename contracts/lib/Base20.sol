@@ -40,25 +40,29 @@ contract _Base20 is ERC20 {
       _;
     }
 
-    // Change founder
-    function changeFounder(address payable who) onlyFounder public {
-      founder = who;
+    modifier superuser {
+      require(founder == msg.sender || admin == msg.sender);
+      _;
     }
 
+    // This function is disabled, The Founder is forever founder
+    // Change founder
+    // function changeFounder(address payable who) onlyFounder public {
+    //   founder = who;
+    // }
+
     // show founder address
-    function getFounder() onlyFounder public view returns (address) {
+    function getFounder() public view returns (address) {
       return founder;
     }
 
     // Change admin
-    function changeAdmin(address who) public {
-      require(who == founder || who == admin);
+    function changeAdmin(address who) onlyFounder public {
       admin = who;
     }
 
     // show admin address
     function getAdmin() public view returns (address) {
-      require(msg.sender == founder || msg.sender == admin);
       return admin;
     }
 

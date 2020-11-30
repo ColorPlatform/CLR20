@@ -25,6 +25,15 @@ contract('ColorCoin-TestConstructor', accounts => {
       })
   )
 
+  it('Check minting speed', () =>
+    ColorCoin.deployed()
+      .then(instance => instance.getMintSpeed.call())
+      .then(result => {
+        console.log("Check minting speed: done, result " + result)
+        assert.equalBN(result, mintSpeed, "Wrong minting speed")
+      })
+  )
+
   it('Check that coin is COL', () =>
     ColorCoin.deployed()
       .then(instance => instance.symbol.call())

@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 
-import "./Base20.sol";
+import "./Mintable.sol";
 
 /// @title Admin can suspend specific wallets in cases of misbehaving or theft.
 /// @notice This contract implements methods to lock tranfers, either globally or for specific accounts.
-contract _Suspendable is _Base20 {
+contract _Suspendable is _Mintable {
   /// @dev flag whether transfers are allowed on global scale.
   ///    When `isTransferable` is `false`, all transfers between wallets are blocked.
   bool internal isTransferable = false;
@@ -18,7 +18,8 @@ contract _Suspendable is _Base20 {
   /// @param _admin Address of the admin wallet
   constructor(uint256 _totalSupply,
     address payable _founder,
-    address _admin) public _Base20(_totalSupply, _founder, _admin)
+    address _admin,
+    uint256 _mintSpeed) public _Mintable(_totalSupply, _founder, _admin, _mintSpeed)
   {
   }
 
@@ -108,11 +109,11 @@ contract _Suspendable is _Base20 {
     return super.approve(_spender, _value);
   }
 
-  /// @notice Change founder. New founder must not be suspended.
-  function changeFounder(address payable who) onlyFounder public {
-    require(!isSuspended(who));
-    super.changeFounder(who);
-  }
+  // /// @notice Change founder. New founder must not be suspended.
+  // function changeFounder(address payable who) onlyFounder public {
+  //   require(!isSuspended(who));
+  //   super.changeFounder(who);
+  // }
 
   /// @notice Change admin. New admin must not be suspended.
   function changeAdmin(address who) public {

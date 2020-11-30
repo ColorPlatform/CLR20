@@ -72,8 +72,9 @@ contract ColorCoinBase is _Suspendable {
   /// @param _admin Address of the admin wallet
   constructor(uint256 _totalSupply,
     address payable _founder,
-    address _admin
-  ) public _Suspendable (_totalSupply, _founder, _admin)
+    address _admin,
+    uint256 _mintSpeed
+  ) public _Suspendable (_totalSupply, _founder, _admin, _mintSpeed)
   {
     supply = founder;
   }
@@ -103,7 +104,7 @@ contract ColorCoinBase is _Suspendable {
     if (hasLockup(_from)) {
       tryUnlock(_from);
     }
-    super._transfer(_from, _to, _value);
+    return super._transfer(_from, _to, _value);
   }
 
   /// @notice The founder sends COLs to early investors and sets lock-up periods.

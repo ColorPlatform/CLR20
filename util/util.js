@@ -14,9 +14,8 @@ global.ColorCoin = artifacts.require('./TestColorCoin.sol')
 
 global.BN = web3.utils.BN
 
-global.initialSupply = new BN("500000000000000000000000000")
-global.pixelSupply = new BN("20000000000000000000000000")
 global.coin = new BN("1000000000000000000")
+
 global._0 = new BN(0)
 global._1 = coin.mul(new BN(1))
 global._2 = coin.mul(new BN(2))
@@ -39,9 +38,20 @@ global._80 = coin.mul(new BN(80))
 global._90 = coin.mul(new BN(90))
 global._100 = coin.mul(new BN(100))
 
+global.initialSupply = coin.mul(new BN(500000000))
+global.pixelSupply = coin.mul(new BN(20000000))
+global.mintSpeed = coin.mul(new BN(2))
+
 assert.equalBN = function (act, exp, msg) {
   if (msg) {
     msg += ": expected " + exp + ", got " + act;
   }
   assert(exp.eq(act), msg)
+}
+
+assert.gtBN = function (left, right, msg) {
+  if (msg) {
+    msg += ": expected " + left + " > " + right;
+  }
+  assert(left.gt(right), msg)
 }

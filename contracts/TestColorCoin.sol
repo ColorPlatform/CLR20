@@ -7,10 +7,11 @@ contract TestColorCoin is ColorCoin {
 	constructor(uint256 _totalSupply,
 		address payable _founder,
 		address _admin,
+		uint256 _mintSpeed,
 		uint256 _pixelCoinSupply,
 		address _pixelAccount
 	) public
-		ColorCoin(_totalSupply, _founder, _admin, _pixelCoinSupply, _pixelAccount)
+		ColorCoin(_totalSupply, _founder, _admin, _mintSpeed, _pixelCoinSupply, _pixelAccount)
 	{
 	}
 

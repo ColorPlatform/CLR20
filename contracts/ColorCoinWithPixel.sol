@@ -42,9 +42,10 @@ contract ColorCoinWithPixel is ColorCoinBase {
   constructor(uint256 _totalSupply,
     address payable _founder,
     address _admin,
+    uint256 _mintSpeed,
     uint256 _pixelCoinSupply,
     address _pixelAccount
-  ) public ColorCoinBase (_totalSupply, _founder, _admin)
+  ) public ColorCoinBase (_totalSupply, _founder, _admin, _mintSpeed)
   {
     require(_pixelAccount != _founder);
     require(_pixelAccount != _admin);
