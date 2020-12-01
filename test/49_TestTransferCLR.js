@@ -54,6 +54,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       destinations.push(user2); amounts.push(_20);
       var _total = _1.mul(new BN(75));
 
+      var founderBalance = await instance.balanceOf.call(founder)
       await tranferContract.transfer_Batch(
         founder,
         destinations, amounts,
@@ -61,23 +62,16 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       );
       userBalance = await instance.balanceOf.call(user2)
       assert.equalBN(userBalance, _total, "Wrong final balance");
-    })
-/*
-    it("User transfers coins", async () => {
-      let instance = await ColorCoin.deployed()
-      await instance.transfer(user2, _30, {from: user1})
-      let balance1 = await instance.balanceOf.call(user1)
-      let balance2 = await instance.balanceOf.call(user2)
-      assert.equalBN(balance1, _70, "Wrong user1 balance")
-      assert.equalBN(balance2, _30, "Wrong user2 balance")
 
-      let circulating = await instance.circulatingSupply.call();
-      assert.equalBN(circulating, _100, "Wrong circulating supply")
+      var newFounderBalance = await instance.balanceOf.call(founder)
+      assert.equalBN(founderBalance.sub(newFounderBalance), _total, 
+        "Wrong balance of the founder's account"
+      )
     })
-*/
   })
-/*
-  contract("Test overdraft", () => {
+
+
+  contract("Test external transfer fails", function () {
     it("Admin enables transfers", async () => {
       let instance = await ColorCoin.deployed()
       await instance.enableTransfer({from: admin})
@@ -85,32 +79,91 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       assert.isTrue(result, "Admin failed to enable transfers")
     })
 
-    it("Founder provides user with coins", async () => {
+    it("Founder allows external transfers", async () => {
       let instance = await ColorCoin.deployed()
-      await instance.transfer(user, _30, {from: founder})
-      let result = await instance.balanceOf.call(user)
-      assert.equalBN(result, _30, "Wrong user balance")
+      let tranferContract = await TransferCLR.deployed()
 
-      let circulating = await instance.circulatingSupply.call();
-      assert.equalBN(circulating, _30, "Wrong circulating supply")
+      await instance.approve(tranferContract.address, _100, {from: founder})
     })
 
-    it("User transfers coins", async () => {
+    it("Batch external transfer with overdraft", async () => {
       let instance = await ColorCoin.deployed()
+      let tranferContract = await TransferCLR.deployed()
+
+      let initialBalance = await instance.balanceOf.call(user2)
+
+
+      // allowence: 100 left
+      var destinations = [];
+      var amounts = [];
+      
+      // prepare addresses
+      destinations.push(user2); amounts.push(_1);
+      destinations.push(user2); amounts.push(_2);
+      destinations.push(user2); amounts.push(_3);
+      destinations.push(user2); amounts.push(_4);
+      destinations.push(user2); amounts.push(_5);
+      destinations.push(user2); amounts.push(_6);
+      destinations.push(user2); amounts.push(_7);
+      destinations.push(user2); amounts.push(_8);
+      destinations.push(user2); amounts.push(_9);
+      destinations.push(user2); amounts.push(_10);
+      destinations.push(user2); amounts.push(_20);
+      destinations.push(user2); amounts.push(_30);
+      var _total = _1.mul(new BN(105));
       try {
-        await instance.transfer(user2, _100, {from: user1})
-        assert.fail("Should have thrown an exception")
+        await tranferContract.transfer_Batch(
+          founder,
+          destinations, amounts,
+          {from: transferOwner}
+        );
       } catch(error) {
         console.log("Error caught: " + error);
+        hadException = true
       }
-      let balance1 = await instance.balanceOf.call(user1)
-      let balance2 = await instance.balanceOf.call(user2)
-      assert.equalBN(balance1, _30, "Wrong user1 balance")
-      assert.equalBN(balance2, _0, "Wrong user2 balance")
+      assert.isTrue(hadException, "Should have thrown")
+      let newBalance = await instance.balanceOf.call(user2)
+      assert.equalBN(newBalance, initialBalance, "Transfers must have been reverted");
+    })
 
-      let circulating = await instance.circulatingSupply.call();
-      assert.equalBN(circulating, _30, "Wrong circulating supply")
+    it("Batch external transfer from wrong account", async () => {
+      let instance = await ColorCoin.deployed()
+      let tranferContract = await TransferCLR.deployed()
+
+      let initialBalance = await instance.balanceOf.call(user2)
+
+
+      // allowance: 100 left
+      var destinations = [];
+      var amounts = [];
+      
+      // prepare addresses
+      destinations.push(user2); amounts.push(_1);
+      destinations.push(user2); amounts.push(_2);
+      destinations.push(user2); amounts.push(_3);
+      destinations.push(user2); amounts.push(_4);
+      destinations.push(user2); amounts.push(_5);
+      destinations.push(user2); amounts.push(_6);
+      destinations.push(user2); amounts.push(_7);
+      destinations.push(user2); amounts.push(_8);
+      destinations.push(user2); amounts.push(_9);
+      destinations.push(user2); amounts.push(_10);
+      destinations.push(user2); amounts.push(_20);
+      
+      try {
+        await tranferContract.transfer_Batch(
+          founder,
+          destinations, amounts,
+          {from: founder}
+        );
+      } catch(error) {
+        console.log("Error caught: " + error);
+        hadException = true
+      }
+      assert.isTrue(hadException, "Should have thrown")
+      let newBalance = await instance.balanceOf.call(user2)
+      assert.equalBN(newBalance, initialBalance, "Transfers must have been reverted");
     })
   })
-*/
+
 })
