@@ -19,7 +19,7 @@ contract _Suspendable is _Mintable {
   constructor(uint256 _totalSupply,
     address payable _founder,
     address _admin,
-    uint256 _mintSpeed) public _Mintable(_totalSupply, _founder, _admin, _mintSpeed)
+    uint256 _mintingSpeed) public _Mintable(_totalSupply, _founder, _admin, _mintingSpeed)
   {
   }
 

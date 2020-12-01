@@ -73,8 +73,8 @@ contract ColorCoinBase is _Suspendable {
   constructor(uint256 _totalSupply,
     address payable _founder,
     address _admin,
-    uint256 _mintSpeed
-  ) public _Suspendable (_totalSupply, _founder, _admin, _mintSpeed)
+    uint256 _mintingSpeed
+  ) public _Suspendable (_totalSupply, _founder, _admin, _mintingSpeed)
   {
     supply = founder;
   }

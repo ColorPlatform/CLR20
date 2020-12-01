@@ -40,7 +40,7 @@ global._100 = coin.mul(new BN(100))
 
 global.initialSupply = coin.mul(new BN(500000000))
 global.pixelSupply = coin.mul(new BN(20000000))
-global.mintSpeed = coin.mul(new BN(2))
+global.mintingSpeed = coin.mul(new BN(2))
 
 assert.equalBN = function (act, exp, msg) {
   if (msg) {
