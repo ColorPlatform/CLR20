@@ -28,16 +28,20 @@ contract _Mintable is _Base20 {
       __mintingSpeed = _mintingSpeed;
   }
 
-  function _mint() internal {
-      uint256 coins = __mintingSpeed*(block.timestamp - _mintLast);
+  function _mint() internal returns (uint256) {
+      uint256 coins = expectedMint();
       if (coins > 0) {
         accounts[founder] += coins;
         __totalSupply += coins;
-        emit Transfer(address(0), founder, coins);
+        _mintLast = block.timestamp;
+
+        emit Minted(coins);
+        // emit Transfer(address(0), founder, coins);
       }
+      return coins;
   }
-  function mint() public {
-      _mint();
+  function mint() public returns (uint256) {
+      return _mint();
   }
 
   function expectedMint() public view returns (uint256) {
@@ -50,6 +54,7 @@ contract _Mintable is _Base20 {
       if (coins > 0) {
         accounts[founder] += coins;
         __totalSupply += coins;
+        emit SupplyIncreased(coins);
         emit Transfer(address(0), founder, coins);
       }
   }
@@ -61,6 +66,7 @@ contract _Mintable is _Base20 {
 
         accounts[founder] -= coins;
         __totalSupply -= coins;
+        emit SupplyDecreased(coins);
         emit Transfer(founder, address(0), coins);
       }
   }
@@ -70,4 +76,8 @@ contract _Mintable is _Base20 {
       _mint();
       return super._transfer(_from, _to, _value);
   }
+
+  event Minted(uint256 amount);
+  event SupplyIncreased(uint256 increase);
+  event SupplyDecreased(uint256 decrease);
 }

@@ -11,6 +11,7 @@ Promise.prototype.delay = function(t) {
 }
 
 global.ColorCoin = artifacts.require('./TestColorCoin.sol')
+global.TransferCLR = artifacts.require('./TransferCLR.sol')
 
 global.BN = web3.utils.BN
 
@@ -37,6 +38,8 @@ global._70 = coin.mul(new BN(70))
 global._80 = coin.mul(new BN(80))
 global._90 = coin.mul(new BN(90))
 global._100 = coin.mul(new BN(100))
+global._1000 = coin.mul(new BN(1000))
+global._10000 = coin.mul(new BN(10000))
 
 global.initialSupply = coin.mul(new BN(500000000))
 global.pixelSupply = coin.mul(new BN(20000000))
