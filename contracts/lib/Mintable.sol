@@ -62,7 +62,7 @@ contract _Mintable is _Base20 {
   function decreaseSupply(uint256 coins) public onlyFounder {
       _mint();
       if (coins > 0) {
-        require(coins <= accounts[founder]);
+        require(coins <= accounts[founder], "Not enough funds in the founder's account");
 
         accounts[founder] -= coins;
         __totalSupply -= coins;

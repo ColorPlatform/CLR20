@@ -30,18 +30,20 @@ contract _Base20 is ERC20 {
 
     // define onlyAdmin
     modifier onlyAdmin {
-      require(admin == msg.sender);
+      require(admin == msg.sender, "Only admin can do this operation");
       _;
     }
 
     // define onlyFounder
     modifier onlyFounder {
-      require(founder == msg.sender);
+      require(founder == msg.sender, "Only founder can do this operation");
       _;
     }
 
     modifier superuser {
-      require(founder == msg.sender || admin == msg.sender);
+      require(founder == msg.sender || admin == msg.sender,
+        "Only admin and founder can do this operation"
+      );
       _;
     }
 
@@ -80,9 +82,9 @@ contract _Base20 is ERC20 {
 
     function _transfer(address _from, address _to, uint256 _value)
     internal returns (bool) {
-      require(_to != address(0));
+      require(_to != address(0), "To burn coins use 'decreaseSupply'");
 
-      require(_value <= accounts[_from]);
+      require(_value <= accounts[_from], "Not enough funds");
 
       // This should go first. If SafeMath.add fails, the sender's balance is not changed
       accounts[_to] = accounts[_to].add(_value);
@@ -100,7 +102,7 @@ contract _Base20 is ERC20 {
     // ERC20 spec.
     function transferFrom(address _from, address _to, uint256 _value)
     public returns (bool) {
-      require(_value <= allowed[_from][msg.sender]);
+      require(_value <= allowed[_from][msg.sender], "Not enough funds allowed");
 
       // _transfer is either successful, or throws.
       _transfer(_from, _to, _value);

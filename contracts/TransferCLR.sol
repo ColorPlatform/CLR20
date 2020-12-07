@@ -12,7 +12,7 @@ contract TransferCLR {
     }
 
     function transfer(address from , address to, uint256 amount) public returns (bool) {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Only owner can use this contract");
 
         return clr.transferFrom(from, to, amount);
     }
@@ -20,9 +20,9 @@ contract TransferCLR {
             address[] memory destinations, 
             uint256[] memory amounts
     ) public {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Only owner can use this contract");
 
-        require(amounts.length == destinations.length);
+        require(amounts.length == destinations.length, "Invalid data");
         
         for (uint256 i = 0; i < destinations.length; i++) {
             address dst = destinations[i];
