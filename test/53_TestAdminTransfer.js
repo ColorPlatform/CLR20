@@ -36,14 +36,6 @@ contract("ColorCoin-TestAdminTransfer", function (accounts) {
 
       assert.equalBN(balance1, _70, "Wrong owner balance")
       assert.equalBN(balance2, _30, "Wrong spenders balance")
-      // check log
-      let size = await instance.getAdminTransferLogSize.call({from: founder})
-      assert.equal(size, 1, "Wrong log size")
-      let item = await instance.getAdminTransferLogItem.call(0, {from: founder});
-      assert.equal(item[0], user1, "Wrong 'from' field")
-      assert.equal(item[1], user2, "Wrong 'to' field")
-      assert.equalBN(item[2], _30, "Wrong 'amount' field")
-      assert.equal(item[3], msg, "Wrong 'reason' field")
 
       let circulating = await instance.circulatingSupply.call();
       assert.equalBN(circulating, _100, "Wrong circulating supply")
@@ -74,21 +66,13 @@ contract("ColorCoin-TestAdminTransfer", function (accounts) {
 
       assert.equalBN(balance1, _0, "Wrong user1 balance")
       assert.equalBN(balance2, _10, "Wrong user2 balance")
-      // check log
-      let size = await instance.getAdminTransferLogSize.call({from: founder})
-      assert.equal(size, 1, "Wrong log size")
-      let item = await instance.getAdminTransferLogItem.call(0, {from: founder});
-      assert.equal(item[0], user1, "Wrong 'from' field")
-      assert.equal(item[1], user2, "Wrong 'to' field")
-      assert.equalBN(item[2], _10, "Wrong 'amount' field")
-      assert.equal(item[3], msg, "Wrong 'reason' field")
 
       var hadException = false;
       try {
         item = await instance.getAdminTransferLogItem.call(0, {from: user3});
       } catch(error) {
         hadException = true;
-        console.log("Excption caught: " + error);
+        console.log("Exception caught: " + error);
       }
       assert.isTrue(hadException, "Should have thrown an exception")
     })

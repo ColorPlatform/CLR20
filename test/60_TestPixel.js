@@ -165,7 +165,7 @@ contract("ColorCoin-TestPixel", function(accounts) {
   //   })
   //
   //   it("Examine gas used by sendCoinsForPixels_Array", async () => {
-  //     console.log("Estimatio for address");
+  //     console.log("n for address");
   //     let instance = await ColorCoin.deployed()
   //     let dst = []
   //     let addAddresses = function (number) {

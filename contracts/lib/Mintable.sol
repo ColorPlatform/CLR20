@@ -1,5 +1,5 @@
-pragma solidity ^0.5.0;
-
+pragma solidity ^0.6.0;
+// SPDX-License-Identifier: UNLICENCED
 import "./Base20.sol";
 
 contract _Mintable is _Base20 {
@@ -27,26 +27,32 @@ contract _Mintable is _Base20 {
       _mint();  // Mint up to now
       __mintingSpeed = _mintingSpeed;
   }
+  function stopMinting() public onlyFounder {
+    __mintingSpeed = 0;
+  }
+
+  function expectedMint() public view returns (uint256) {
+    if (block.timestamp < _mintLast || __mintingSpeed == 0) {
+      return 0;
+    }
+
+    return __mintingSpeed.mul(block.timestamp - _mintLast);
+  }
 
   function _mint() internal returns (uint256) {
       uint256 coins = expectedMint();
       if (coins > 0) {
-        accounts[founder] += coins;
-        __totalSupply += coins;
+        accounts[founder] = accounts[founder].add(coins);
+        __totalSupply = __totalSupply.add(coins);
         _mintLast = block.timestamp;
 
         emit Minted(coins);
-        // emit Transfer(address(0), founder, coins);
       }
       return coins;
   }
+
   function mint() public returns (uint256) {
       return _mint();
-  }
-
-  function expectedMint() public view returns (uint256) {
-    uint256 coins = __mintingSpeed*(block.timestamp - _mintLast);
-    return coins;
   }
 
   function increaseSupply(uint256 coins) public onlyFounder {
@@ -71,7 +77,7 @@ contract _Mintable is _Base20 {
       }
   }
 
-  function _transfer(address _from, address _to, uint256 _value)
+  function _transfer(address _from, address _to, uint256 _value) override virtual
   internal returns (bool) {
       _mint();
       return super._transfer(_from, _to, _value);

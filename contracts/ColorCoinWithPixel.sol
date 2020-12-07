@@ -1,5 +1,5 @@
-pragma solidity ^0.5.0;
-
+pragma solidity ^0.6.0;
+// SPDX-License-Identifier: UNLICENCED
 import "./ColorCoinBase.sol";
 
 /// @title Dedicated methods for Pixel program
@@ -26,7 +26,7 @@ contract ColorCoinWithPixel is ColorCoinBase {
     _;
   }
 
-  function circulatingSupply() public view returns(uint256) {
+  function circulatingSupply() public override view returns(uint256) {
     uint256 result = super.circulatingSupply();
     return result - balanceOf(pixelAccount);
   }

@@ -1,5 +1,5 @@
-pragma solidity ^0.5.0;
-
+pragma solidity ^0.6.0;
+// SPDX-License-Identifier: UNLICENCED
 import "./ColorCoinWithPixel.sol";
 
 /// @title Smart contract for Color Coin token.

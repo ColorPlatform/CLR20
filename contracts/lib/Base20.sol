@@ -1,5 +1,5 @@
-pragma solidity ^0.5.0;
-
+pragma solidity ^0.6.0;
+// SPDX-License-Identifier: UNLICENCED
 import "./ERC20.sol";
 import "./SafeMath.sol";
 
@@ -58,30 +58,30 @@ contract _Base20 is ERC20 {
       return founder;
     }
 
-    // Change admin
-    function changeAdmin(address who) onlyFounder public {
-      admin = who;
-    }
-
     // show admin address
     function getAdmin() public view returns (address) {
       return admin;
     }
 
+    // Change admin
+    function changeAdmin(address who) onlyFounder public virtual {
+      admin = who;
+    }
+
     //
     // ERC20 spec.
     //
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() override public view returns (uint256) {
       return __totalSupply;
     }
 
     // ERC20 spec.
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) override virtual public view returns (uint256) {
       return accounts[_owner];
     }
 
-    function _transfer(address _from, address _to, uint256 _value)
-    internal returns (bool) {
+    function _transfer(address _from, address _to, uint256 _value) 
+    internal virtual returns (bool) {
       require(_to != address(0), "To burn coins use 'decreaseSupply'");
 
       require(_value <= accounts[_from], "Not enough funds");
@@ -95,12 +95,12 @@ contract _Base20 is ERC20 {
       return true;
     }
     // ERC20 spec.
-    function transfer(address _to, uint256 _value) public returns (bool) {
+    function transfer(address _to, uint256 _value) override public virtual returns (bool) {
       return _transfer(msg.sender, _to, _value);
     }
 
     // ERC20 spec.
-    function transferFrom(address _from, address _to, uint256 _value)
+    function transferFrom(address _from, address _to, uint256 _value) override virtual 
     public returns (bool) {
       require(_value <= allowed[_from][msg.sender], "Not enough funds allowed");
 
@@ -114,14 +114,14 @@ contract _Base20 is ERC20 {
     }
 
     // ERC20 spec.
-    function approve(address _spender, uint256 _value) public returns (bool) {
+    function approve(address _spender, uint256 _value) override virtual public returns (bool) {
       allowed[msg.sender][_spender] = _value;
       emit Approval(msg.sender, _spender, _value);
       return true;
     }
 
     // ERC20 spec.
-    function allowance(address _owner, address _spender) public view returns (uint256) {
+    function allowance(address _owner, address _spender) override public virtual view returns (uint256) {
       return allowed[_owner][_spender];
     }
 }

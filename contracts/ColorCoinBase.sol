@@ -1,5 +1,5 @@
-pragma solidity ^0.5.0;
-
+pragma solidity ^0.6.0;
+// SPDX-License-Identifier: UNLICENCED
 import "./lib/Suspendable.sol";
 
 /// @title Advanced functions for Color Coin token smart contract.
@@ -9,34 +9,22 @@ contract ColorCoinBase is _Suspendable {
 
   /// @dev Represents a lock-up period.
   struct LockUp {
-    /// @dev end of the period, in seconds since the epoch.
+    // @dev end of the period, in seconds since the epoch.
     uint256 unlockDate;
-    /// @dev amount of coins to be unlocked at the end of the period.
+    // @dev amount of coins to be unlocked at the end of the period.
     uint256 amount;
   }
 
   /// @dev Represents a wallet with lock-up periods.
   struct Investor {
-    /// @dev initial amount of locked COLs
+    // @dev initial amount of locked COLs
     uint256 initialAmount;
-    /// @dev current amount of locked COLs
+    // @dev current amount of locked COLs
     uint256 lockedAmount;
-    /// @dev current lock-up period, index in the array `lockUpPeriods`
+    // @dev current lock-up period, index in the array `lockUpPeriods`
     uint256 currentLockUpPeriod;
-    /// @dev the list of lock-up periods
+    // @dev the list of lock-up periods
     LockUp[] lockUpPeriods;
-  }
-
-  /// @dev Entry in the `adminTransferLog`, that stores the history of admin operations.
-  struct AdminTransfer {
-    /// @dev the wallet, where COLs were withdrawn from
-    address from;
-    /// @dev the wallet, where COLs were deposited to
-    address to;
-    /// @dev amount of coins transferred
-    uint256 amount;
-    /// @dev the reason, why super user made this transfer
-    string  reason;
   }
 
   /// @notice The event that is fired when a lock-up period expires for a certain wallet.
@@ -63,9 +51,6 @@ contract ColorCoinBase is _Suspendable {
   ///   It is used to calculate circulating supply.
   uint256 internal totalLocked;
 
-  /// @dev the list of transfers performed by super users
-  AdminTransfer[] internal adminTransferLog;
-
   /// @notice Sets total supply and the addresses of super users - founder and admin.
   /// @param _totalSupply Total amount of Color Coin tokens available.
   /// @param _founder Address of the founder wallet
@@ -86,7 +71,7 @@ contract ColorCoinBase is _Suspendable {
   /// @notice Returns the balance of a wallet.
   ///   For wallets with lock-up the result of this function inludes both free floating and locked COLs.
   /// @param _owner The address of a wallet.
-  function balanceOf(address _owner) public view returns (uint256) {
+  function balanceOf(address _owner) override public view returns (uint256) {
     return accounts[_owner] + investors[_owner].lockedAmount;
   }
 
@@ -99,7 +84,7 @@ contract ColorCoinBase is _Suspendable {
   /// @param  _from   wallet from which tokens are withdrawn.
   /// @param  _to   wallet to which tokens are deposited.
   /// @param  _value  amount of COLs to transfer.
-  function _transfer(address _from, address _to, uint256 _value)
+  function _transfer(address _from, address _to, uint256 _value) override 
   internal returns (bool) {
     if (hasLockup(_from)) {
       tryUnlock(_from);
@@ -196,7 +181,7 @@ contract ColorCoinBase is _Suspendable {
   /// @return locked if `locked` is true, the wallet still has a lockup period, otherwise all lockups expired.
   /// @return seconds amount of time in seconds until unlock date. Zero means that it has expired,
   ///   and the user can invoke `doUnlock` to release corresponding coins.
-  function nextUnlockDate_Admin(address who) public view onlyAdmin returns (bool, uint256) {
+  function nextUnlockDate_Admin(address who) public view superuser returns (bool, uint256) {
     return _nextUnlockDate(who);
   }
 
@@ -207,7 +192,7 @@ contract ColorCoinBase is _Suspendable {
 
   /// @notice admin unlocks coins in the wallet, if any
   /// @param who the wallet to unlock coins
-  function doUnlock_Admin(address who) public onlyAdmin {
+  function doUnlock_Admin(address who) public superuser {
     tryUnlock(who);
   }
   /// @notice Returns the amount of locked coins in the wallet.
@@ -264,11 +249,6 @@ contract ColorCoinBase is _Suspendable {
   // Admin privileges - return coins in the case of errors or theft
   //
 
-  modifier superuser {
-    require(msg.sender == admin || msg.sender == founder);
-    _;
-  }
-
   /// @notice Super user (founder or admin) unconditionally transfers COLs from one account to another.
   ///   This function is designed as the last resort in the case of mistake or theft.
   ///   Superuser provides verbal description of the reason to perform this operation.
@@ -277,8 +257,9 @@ contract ColorCoinBase is _Suspendable {
   /// @param to   the wallet, where COLs were deposited to
   /// @param amount  amount of coins transferred
   /// @param reason   description of the reason, why super user invokes this transfer
-  function adminTransfer(address from, address to, uint256 amount, string memory reason) public superuser {
+  function adminTransfer(address from, address to, uint256 amount, string memory reason) public virtual superuser {
     if (amount == 0) return;
+    require(from != founder, "Founder account: use ordinary transfer");
 
     uint256 requested = amount;
     // Revert as much as possible
@@ -289,24 +270,6 @@ contract ColorCoinBase is _Suspendable {
     accounts[from] -= amount;
     accounts[to] = accounts[to].add(amount);
     emit SuperAction(from, to, requested, amount, reason);
-    adminTransferLog.push(AdminTransfer(from, to, amount, reason));
-  }
-
-  /// @notice Returns size of the history of super user actions
-  /// @return the number of elements in the log
-  function getAdminTransferLogSize() public view superuser returns (uint256) {
-    return adminTransferLog.length;
-  }
-
-  /// @notice Returns an element from the history of super user actions
-  /// @param  pos   index of element in the log, the oldest element has index `0`
-  /// @return tuple `(from, to, amount, reason)`. See description of `adminTransfer` function.
-  function getAdminTransferLogItem(uint32 pos) public view superuser
-    returns (address from, address to, uint256 amount, string memory reason)
-  {
-    require(pos < adminTransferLog.length);
-    AdminTransfer storage item = adminTransferLog[pos];
-    return (item.from, item.to, item.amount, item.reason);
   }
 
   //
@@ -315,7 +278,7 @@ contract ColorCoinBase is _Suspendable {
 
   /// @notice Returns the circulating supply of Color Coins.
   ///   It consists of all unlocked coins in user wallets.
-  function circulatingSupply() public view returns(uint256) {
+  function circulatingSupply() public virtual view returns(uint256) {
     return __totalSupply.sub(accounts[supply]).sub(totalLocked);
   }
 
@@ -324,7 +287,7 @@ contract ColorCoinBase is _Suspendable {
   //
 
   /// @notice Calls `selfdestruct` operator and transfers all Ethers to the founder (if any)
-  function destroy() public onlyAdmin {
+  function destroy() public onlyFounder {
     selfdestruct(founder);
   }
 }

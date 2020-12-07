@@ -20,7 +20,7 @@ contract("ColorCoin-TestTransferDisabled", function (accounts) {
     assert.equalBN(result, _100, "Wrong user balance")
   })
 
-  it("User failes to transfer coins", async () => {
+  it("User fails to transfer coins", async () => {
     let hadException = false
     let instance = await ColorCoin.deployed()
     try {
@@ -74,7 +74,7 @@ contract("Test re-disabling transfer", function (accounts) {
     assert.isFalse(result, "Admin failed to enable transfers")
   })
 
-  it("User failes to transfer coins", async () => {
+  it("User fails to transfer coins", async () => {
     let hadException = false
     let instance = await ColorCoin.deployed()
     try {
@@ -101,16 +101,11 @@ contract("Test re-disabling transfer", function (accounts) {
     }
     assert.isTrue(hadException, "Should have thrown")
   })
-  it ("Founder can't disable transfers", async () => {
-    let hadException = false
+  it ("Founder can disable transfers", async () => {
     let instance = await ColorCoin.deployed()
-    try {
-      await instance.disableTransfer({from: founder})
-    } catch(error) {
-      console.log("Error caught: " + error);
-      hadException = true
-    }
-    assert.isTrue(hadException, "Should have thrown")
+    await instance.disableTransfer({from: founder})
+    let result = await instance.isTransferEnabled.call()
+    assert.isFalse(result, "Founder failed to disable transfers")
   })
 
   it ("Users can't enable transfers", async () => {
@@ -124,15 +119,11 @@ contract("Test re-disabling transfer", function (accounts) {
     }
     assert.isTrue(hadException, "Should have thrown")
   })
-  it ("Founder can't enable transfers", async () => {
+  it ("Founder can enable transfers", async () => {
     let hadException = false
     let instance = await ColorCoin.deployed()
-    try {
-      await instance.enableTransfer({from: founder})
-    } catch(error) {
-      console.log("Error caught: " + error);
-      hadException = true
-    }
-    assert.isTrue(hadException, "Should have thrown")
+    await instance.enableTransfer({from: founder})
+    let result = await instance.isTransferEnabled.call()
+    assert.isTrue(result, "Founder failed to disable transfers")
   })
 })
