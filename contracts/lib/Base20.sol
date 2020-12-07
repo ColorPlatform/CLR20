@@ -50,6 +50,8 @@ contract _Base20 is ERC20 {
     // This function is disabled, The Founder is forever founder
     // Change founder
     // function changeFounder(address payable who) onlyFounder public {
+    //   require(who != address(0), "Unusable address for the new founder");
+    //   _transfer(founder, who, balanceOf(founder));
     //   founder = who;
     // }
 
