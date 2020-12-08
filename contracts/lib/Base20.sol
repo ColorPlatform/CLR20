@@ -86,7 +86,7 @@ contract _Base20 is ERC20 {
     internal virtual returns (bool) {
       require(_to != address(0), "To burn coins use 'decreaseSupply'");
 
-      require(_value <= accounts[_from], "Not enough funds");
+      require(_value <= accounts[_from], "Not enough funds to transfer");
 
       // This should go first. If SafeMath.add fails, the sender's balance is not changed
       accounts[_to] = accounts[_to].add(_value);

@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 // SPDX-License-Identifier: UNLICENCED
 import "./Mintable.sol";
 
-/// @title Admin can suspend specific wallets in cases of misbehaving or theft.
+/// @title Admin and founder can suspend specific wallets in cases of misbehaving or theft.
 /// @notice This contract implements methods to lock tranfers, either globally or for specific accounts.
 contract _Suspendable is _Mintable {
   /// @dev flag whether transfers are allowed on global scale.
@@ -26,7 +26,7 @@ contract _Suspendable is _Mintable {
   /// @dev specifies that the marked method could be used only when transfers are enabled.
   ///   Founder can always transfer
   modifier transferable {
-    require(isTransferable || msg.sender == founder);
+    require(isTransferable || msg.sender == founder || msg.sender == admin);
     _;
   }
 
@@ -55,6 +55,7 @@ contract _Suspendable is _Mintable {
   /// @param _address wallet to check
   /// @return returns `true` if the wallet `who` is suspended.
   function isSuspended(address _address) public view returns(bool) {
+    if (_address == founder || _address == admin) return false;
     return suspendedAddresses[_address];
   }
 
@@ -80,23 +81,27 @@ contract _Suspendable is _Mintable {
 
   /// @dev Internal function for transfers updated.
   ///   Neither source nor destination of the transfer can be suspended.
-  function _transfer(address _from, address _to, uint256 _value) override virtual internal returns (bool) {
-    require(!isSuspended(_to));
-    require(!isSuspended(_from));
-
+  function _transfer(address _from, address _to, uint256 _value) override 
+  virtual internal returns (bool) {
+    // founder can always transfer
+    if (msg.sender != founder) {
+      require(!isSuspended(_to), "Destination of the transfer is suspended");
+      require(!isSuspended(_from), "Source of the transfer is suspended");
+    }
     return super._transfer(_from, _to, _value);
   }
 
   /// @notice `transfer` can't happen when transfers are disabled globally
   /// @dev added modifier `transferable`.
-  function transfer(address _to, uint256 _value) public override transferable returns (bool) {
+  function transfer(address _to, uint256 _value) override
+  public transferable returns (bool) {
     return _transfer(msg.sender, _to, _value);
   }
 
   /// @notice `transferFrom` can't happen when transfers are disabled globally
   /// @dev added modifier `transferable`.
-  function transferFrom(address _from, address _to, uint256 _value) public override transferable returns (bool) {
-    require(!isSuspended(msg.sender));
+  function transferFrom(address _from, address _to, uint256 _value) override
+  public transferable returns (bool) {
     return super.transferFrom(_from, _to, _value);
   }
 

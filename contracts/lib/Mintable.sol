@@ -39,15 +39,15 @@ contract _Mintable is _Base20 {
     return __mintingSpeed.mul(block.timestamp - _mintLast);
   }
 
-  function _mint() internal returns (uint256) {
+  function _mint() internal virtual returns (uint256) {
       uint256 coins = expectedMint();
       if (coins > 0) {
         accounts[founder] = accounts[founder].add(coins);
         __totalSupply = __totalSupply.add(coins);
-        _mintLast = block.timestamp;
 
         emit Minted(coins);
       }
+      _mintLast = block.timestamp;
       return coins;
   }
 
@@ -58,8 +58,8 @@ contract _Mintable is _Base20 {
   function increaseSupply(uint256 coins) public onlyFounder {
       _mint();
       if (coins > 0) {
-        accounts[founder] += coins;
-        __totalSupply += coins;
+        accounts[founder] = accounts[founder].add(coins);
+        __totalSupply = __totalSupply.add(coins);
         emit SupplyIncreased(coins);
         emit Transfer(address(0), founder, coins);
       }
@@ -71,14 +71,14 @@ contract _Mintable is _Base20 {
         require(coins <= accounts[founder], "Not enough funds in the founder's account");
 
         accounts[founder] -= coins;
-        __totalSupply -= coins;
+        __totalSupply = __totalSupply.sub(coins);
         emit SupplyDecreased(coins);
         emit Transfer(founder, address(0), coins);
       }
   }
 
-  function _transfer(address _from, address _to, uint256 _value) override virtual
-  internal returns (bool) {
+  function _transfer(address _from, address _to, uint256 _value) override
+  virtual internal returns (bool) {
       _mint();
       return super._transfer(_from, _to, _value);
   }
