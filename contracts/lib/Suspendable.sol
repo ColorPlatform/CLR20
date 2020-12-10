@@ -26,7 +26,7 @@ contract _Suspendable is _Mintable {
   /// @dev specifies that the marked method could be used only when transfers are enabled.
   ///   Founder can always transfer
   modifier transferable {
-    require(isTransferable || msg.sender == founder || msg.sender == admin);
+    require(isTransferable || msg.sender == founder || msg.sender == admin, "Global transfer is disabled");
     _;
   }
 
