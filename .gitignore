@@ -4,3 +4,4 @@ coverage.json
 scripts/node_modules
 scripts/*.csv
 scripts/*.json
+test.log
