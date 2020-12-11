@@ -94,14 +94,15 @@ contract _Suspendable is _Mintable {
   /// @notice `transfer` can't happen when transfers are disabled globally
   /// @dev added modifier `transferable`.
   function transfer(address _to, uint256 _value) override
-  public transferable returns (bool) {
+  public virtual transferable returns (bool) {
     return _transfer(msg.sender, _to, _value);
   }
 
   /// @notice `transferFrom` can't happen when transfers are disabled globally
   /// @dev added modifier `transferable`.
   function transferFrom(address _from, address _to, uint256 _value) override
-  public transferable returns (bool) {
+  public virtual transferable returns (bool) {
+    require(!isSuspended(msg.sender), "Spender is suspended");
     return super.transferFrom(_from, _to, _value);
   }
 
@@ -110,7 +111,7 @@ contract _Suspendable is _Mintable {
   ///   Suspended users are not allowed to do approvals as well.
   /// @dev  Added modifier `transferable`.
   function approve(address _spender, uint256 _value) public override transferable returns (bool) {
-    require(!isSuspended(msg.sender));
+    require(!isSuspended(msg.sender), "Account owner is suspended");
     return super.approve(_spender, _value);
   }
 
@@ -121,8 +122,8 @@ contract _Suspendable is _Mintable {
   // }
 
   /// @notice Change admin. New admin must not be suspended.
-  function changeAdmin(address who) public override {
-    require(!isSuspended(who));
+  function changeAdmin(address who) superuser public override {
+    require(!isSuspended(who), "The admin-to-be is suspended.");
     super.changeAdmin(who);
   }
 }
