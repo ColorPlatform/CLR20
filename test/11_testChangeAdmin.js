@@ -21,6 +21,16 @@ contract('ColorCoin-TestChangeAdmin', accounts => {
     }
   })
 
+  it('The new admin has no super-powers initially', async () => {
+    let instance = await ColorCoin.deployed()
+    try {
+      await instance.disableTransfer({from: newAdmin})
+      assert.fail("Must have failed: the admin-to-be had no super powers initially")
+    } catch(error) {
+      console.log("Error: " + error)
+    }
+  })
+
   it('The original admin can\'t change admin', async () => {
     let instance = await ColorCoin.deployed()
     try {
