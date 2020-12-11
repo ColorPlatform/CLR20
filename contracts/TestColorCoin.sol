@@ -41,4 +41,16 @@ contract TestColorCoin is ColorCoin {
 	function tryToUnlock(address who) public {
 		tryUnlock(who);
 	}
+
+	function transfer(address _to, uint256 _value) override
+	public virtual transferable returns (bool) {
+		require(super.transfer(_to, _value), "Transfer must return `true`");
+		return true;
+	}
+
+	function transferFrom(address _from, address _to, uint256 _value) override
+	public virtual transferable returns (bool) {
+		require(super.transferFrom(_from, _to, _value));
+		return true;
+	}
 }
