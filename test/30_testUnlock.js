@@ -14,9 +14,9 @@ contract('ColorCoin-TestUnlock', accounts => {
 
   it("Distribute coins to account[2]", async () => {
     timestamp = Math.floor(new Date().getTime()/1000)
-    t1 = timestamp + 2
-    t2 = timestamp + 3
-    t3 = timestamp + 6
+    t1 = timestamp + 3
+    t2 = timestamp + 5
+    t3 = timestamp + 8
 
     var contract = await ColorCoin.deployed()
     await contract.distribute(user, _100,

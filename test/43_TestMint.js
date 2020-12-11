@@ -6,7 +6,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
   var user = accounts[2]
   var user1 = user
   var user2 = accounts[3]
-/*
+
   contract("Test Mint", function () {
 
     it("Founder transfer", async () => {
@@ -94,7 +94,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
     })
 
   })
-*/
+
   contract("Test Increase/Decrease Supply", function () {
 
     it("Increase supply", async () => {

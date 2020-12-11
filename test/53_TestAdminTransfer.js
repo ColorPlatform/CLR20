@@ -9,13 +9,6 @@ contract("ColorCoin-TestAdminTransfer", function (accounts) {
   var user3 = accounts[4]
 
   contract("Test basic admin transfer", function () {
-    // it("Admin enables transfers", async () => {
-    //   let instance = await ColorCoin.deployed()
-    //   await instance.enableTransfer({from: admin})
-    //   let result = await instance.isTransferEnabled.call()
-    //   assert.isTrue(result, "Admin failed to enable transfers")
-    // })
-
     it("Founder provides user1 with coins", async () => {
       let instance = await ColorCoin.deployed()
       await instance.transfer(user1, _100, {from: founder})
@@ -39,6 +32,8 @@ contract("ColorCoin-TestAdminTransfer", function (accounts) {
 
       let circulating = await instance.circulatingSupply.call();
       assert.equalBN(circulating, _100, "Wrong circulating supply")
+      
+      await ColorCoin.deployed().delay(2000);
     })
   })
   contract("Test admin transfer with overdraft", function () {

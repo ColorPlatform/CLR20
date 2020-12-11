@@ -7,7 +7,7 @@ contract("ColorCoin-TestTransferSuspended", function (accounts) {
   var user1 = user
   var user2 = accounts[3]
 
-  contract("Test trunsfer from suspended user", function () {
+  contract("Test transfer from suspended user", function () {
     it("Check user is not suspended initially", async () => {
       let instance = await ColorCoin.deployed()
       let result = await instance.isSuspended.call(user)
@@ -140,7 +140,7 @@ contract("ColorCoin-TestTransferSuspended", function (accounts) {
       assert.isTrue(hadException, "Should have thrown")
     })
 
-    it ("Founder can't suspend user", async () => {
+    it ("Founder can suspend user", async () => {
       let hadException = false
       let instance = await ColorCoin.deployed()
       try {
@@ -149,7 +149,9 @@ contract("ColorCoin-TestTransferSuspended", function (accounts) {
         console.log("Error caught: " + error);
         hadException = true
       }
-      assert.isTrue(hadException, "Should have thrown")
+      assert.isFalse(hadException, "Unexpected exception")
+      let result = await instance.isSuspended.call(user2)
+      assert.isTrue(result, "Founder failed to suspend user2")
     })
 
     it ("Users can't unsuspend another user", async () => {
@@ -164,7 +166,7 @@ contract("ColorCoin-TestTransferSuspended", function (accounts) {
       assert.isTrue(hadException, "Should have thrown")
     })
 
-    it ("Founder can't unsuspend user", async () => {
+    it ("Founder can unsuspend user", async () => {
       let hadException = false
       let instance = await ColorCoin.deployed()
       try {
@@ -173,7 +175,9 @@ contract("ColorCoin-TestTransferSuspended", function (accounts) {
         console.log("Error caught: " + error);
         hadException = true
       }
-      assert.isTrue(hadException, "Should have thrown")
+      assert.isFalse(hadException, "Unexpected exception")
+      let result = await instance.isSuspended.call(user2)
+      assert.isFalse(result, "Founder failed to unsuspend user2")
     })
   })
 })

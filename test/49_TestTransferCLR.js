@@ -18,15 +18,15 @@ contract("ColorCoin-TestTransfer", function (accounts) {
 
     it("Founder allows external transfers", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
+      let transferContract = await TransferCLR.deployed()
 
-      await instance.approve(tranferContract.address, _100, {from: founder})
+      await instance.approve(transferContract.address, _100, {from: founder})
     })
 
     it("Single external transfer", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
-      await tranferContract.transfer(founder, user, _10, {from: transferOwner})
+      let transferContract = await TransferCLR.deployed()
+      await transferContract.transfer(founder, user, _10, {from: transferOwner})
 
       let result = await instance.balanceOf.call(user)
       assert.equalBN(result, _10, "Wrong user balance")
@@ -34,7 +34,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
 
     it("Batch external transfer", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
+      let transferContract = await TransferCLR.deployed()
 
       // allowence: 90 left
       var destinations = [];
@@ -55,7 +55,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       var _total = _1.mul(new BN(75));
 
       var founderBalance = await instance.balanceOf.call(founder)
-      await tranferContract.transfer_Batch(
+      await transferContract.transfer_Batch(
         founder,
         destinations, amounts,
         {from: transferOwner}
@@ -81,14 +81,14 @@ contract("ColorCoin-TestTransfer", function (accounts) {
 
     it("Founder allows external transfers", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
+      let transferContract = await TransferCLR.deployed()
 
-      await instance.approve(tranferContract.address, _100, {from: founder})
+      await instance.approve(transferContract.address, _100, {from: founder})
     })
 
     it("Batch external transfer with overdraft", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
+      let transferContract = await TransferCLR.deployed()
 
       let initialBalance = await instance.balanceOf.call(user2)
 
@@ -112,7 +112,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       destinations.push(user2); amounts.push(_30);
       var _total = _1.mul(new BN(105));
       try {
-        await tranferContract.transfer_Batch(
+        await transferContract.transfer_Batch(
           founder,
           destinations, amounts,
           {from: transferOwner}
@@ -128,7 +128,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
 
     it("Batch external transfer from wrong account", async () => {
       let instance = await ColorCoin.deployed()
-      let tranferContract = await TransferCLR.deployed()
+      let transferContract = await TransferCLR.deployed()
 
       let initialBalance = await instance.balanceOf.call(user2)
 
@@ -151,7 +151,7 @@ contract("ColorCoin-TestTransfer", function (accounts) {
       destinations.push(user2); amounts.push(_20);
       
       try {
-        await tranferContract.transfer_Batch(
+        await transferContract.transfer_Batch(
           founder,
           destinations, amounts,
           {from: founder}

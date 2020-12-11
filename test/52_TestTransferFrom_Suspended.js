@@ -116,7 +116,7 @@ contract("ColorCoin-TestTransferFrom", function (accounts) {
       assert.equalBN(result, _100, "Wrong user balance")
     })
 
-    it("The owner allowes the spender to transfer coins", async () => {
+    it("The owner allows the spender to transfer coins", async () => {
       let instance = await ColorCoin.deployed()
       await instance.approve(spender, _50, {from: owner})
       let allowance = await instance.allowance.call(owner, spender)
@@ -131,8 +131,11 @@ contract("ColorCoin-TestTransferFrom", function (accounts) {
     })
 
     it("The suspended spender fails to transfer coins", async () => {
-      let hadException = false;
       let instance = await ColorCoin.deployed()
+      let suspended = await instance.isSuspended.call(spender)
+      assert.isTrue(suspended, "Admin failed to suspend the spender")
+
+      let hadException = false;
       try {
         await instance.transferFrom(owner, dst, _30, {from: spender})
       } catch(error) {
