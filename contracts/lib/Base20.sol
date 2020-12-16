@@ -104,6 +104,10 @@ contract _Base20 is ERC20 {
     // ERC20 spec.
     function transferFrom(address _from, address _to, uint256 _value) override virtual 
     public returns (bool) {
+      if (_from == msg.sender) {
+        return transfer(_to, _value);
+      }
+
       require(_value <= allowed[_from][msg.sender], "Not enough funds allowed");
 
       // _transfer is either successful, or throws.

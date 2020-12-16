@@ -1,6 +1,6 @@
 pragma solidity ^0.6.0;
 // SPDX-License-Identifier: UNLICENCED
-import "./ColorCoinBase.sol";
+import "./lib/ERC20.sol";
 
 /// @title Dedicated methods for Pixel program
 /// @notice Pixels are a type of “airdrop” distributed to all Color Coin wallet holders,
@@ -13,55 +13,54 @@ import "./ColorCoinBase.sol";
 ///   on weekly basis, after Saturday GMT 24:00.
 /// @dev Pixel distribution might require thousands and tens of thousands transactions.
 ///   The methods in this contract consume less gas compared to batch transactions.
-contract ColorCoinWithPixel is ColorCoinBase {
+contract Pixel {
 
-  address internal pixelAccount;
+  address internal pixelAdmin;
+  address payable internal founder;
+  
+  ERC20 internal coinContract;
 
   /// @dev The rate to convert pixels to Color Coins
   uint256 internal pixelConvRate;
 
   /// @dev Methods could be called by either the founder of the dedicated account.
-  modifier pixelOrFounder {
-    require(msg.sender == founder || msg.sender == pixelAccount);
+  modifier pixel {
+    require(msg.sender == pixelAdmin || msg.sender == founder, "Only Pixel founder or admin can do this");
     _;
   }
 
-  function circulatingSupply() public override view returns(uint256) {
-    uint256 result = super.circulatingSupply();
-    return result - balanceOf(pixelAccount);
-  }
-
   /// @notice Initialises a newly created instance.
-  /// @dev Initialises Pixel-related data and transfers `_pixelCoinSupply` COLs
-  ///   from the `_founder` to `_pixelAccount`.
-  /// @param _totalSupply Total amount of Color Coin tokens available.
-  /// @param _founder Address of the founder wallet
-  /// @param _admin Address of the admin wallet
-  /// @param _pixelCoinSupply Amount of tokens dedicated for Pixel program
-  /// @param _pixelAccount Address of the account that keeps coins for the Pixel program
-  constructor(uint256 _totalSupply,
-    address payable _founder,
-    address _admin,
-    uint256 _mintSpeed,
-    uint256 _pixelCoinSupply,
-    address _pixelAccount
-  ) public ColorCoinBase (_totalSupply, _founder, _admin, _mintSpeed)
+  constructor(
+    ERC20 _coinContract,
+    address _pixelAdmin
+  ) public 
   {
-    require(_pixelAccount != _founder);
-    require(_pixelAccount != _admin);
+    coinContract = _coinContract;
+    pixelAdmin = _pixelAdmin;
 
-    pixelAccount = _pixelAccount;
-    accounts[pixelAccount] = _pixelCoinSupply;
-    accounts[_founder] = accounts[_founder].sub(_pixelCoinSupply);
-    emit Transfer(founder, pixelAccount, accounts[pixelAccount]);
+    founder = msg.sender;
   }
 
-  /// @notice Founder or the pixel account set the pixel conversion rate.
+  function getFounder() public view returns(address) {
+    return founder;
+  }
+
+  function getAdmin() public view returns(address) {
+    return pixelAdmin;
+  }
+
+  function setAdmin(address newAdmin) public {
+    require(msg.sender == founder, "Only founder can change admins");
+    pixelAdmin = newAdmin;
+  }
+
+
+  /// @notice Founder or the pixel admin set the pixel conversion rate.
   ///   Pixel team first sets this conversion rate and then start sending COLs
   ///   in exchange of pixels that people have received.
   /// @dev This rate is used in `sendCoinsForPixels` functions to calculate the amount
   ///   COLs to transfer to pixel holders.
-  function setPixelConversionRate(uint256 _pixelConvRate) public pixelOrFounder {
+  function setPixelConversionRate(uint256 _pixelConvRate) public pixel {
     pixelConvRate = _pixelConvRate;
   }
 
@@ -71,20 +70,17 @@ contract ColorCoinWithPixel is ColorCoinBase {
   }
 
   /// @notice Distribute COL coins for pixels
-  ///   COLs are spent from `pixelAccount` wallet. The amount of COLs is equal to `getPixelConversionRate() * pixels`
-  /// @dev Only founder and pixel account can invoke this function.
+  ///   COLs are spent from `Pixel` wallet. The amount of COLs is equal to `getPixelConversionRate() * pixels`
+  /// @dev Only pixel admin and founder can invoke this function.
   /// @param pixels       Amount of pixels to exchange into COLs
   /// @param destination  The wallet that holds the pixels.
   function sendCoinsForPixels(
     uint32 pixels, address destination
-  ) public pixelOrFounder {
+  ) public pixel {
     uint256 coins = pixels*pixelConvRate;
     if (coins == 0) return;
 
-    require(coins <= accounts[pixelAccount]);
-
-    accounts[destination] = accounts[destination].add(coins);
-    accounts[pixelAccount] -= coins;
+    coinContract.transferFrom(address(this), destination, coins);
   }
 
   /// @notice Distribute COL coins for pixels to multiple users.
@@ -97,18 +93,13 @@ contract ColorCoinWithPixel is ColorCoinBase {
   function sendCoinsForPixels_Batch(
     uint32[] memory pixels,
     address[] memory destinations
-  ) public pixelOrFounder {
-    require(pixels.length == destinations.length);
-    uint256 total = 0;
+  ) public pixel {
+    require(pixels.length == destinations.length, "Invalid data");
     for (uint256 i = 0; i < pixels.length; i++) {
       uint256 coins = pixels[i]*pixelConvRate;
       address dst = destinations[i];
-      accounts[dst] = accounts[dst].add(coins);
-      total += coins;
+      coinContract.transferFrom(address(this), dst, coins);
     }
-
-    require(total <= accounts[pixelAccount]);
-    accounts[pixelAccount] -= total;
   }
 
   /// @notice Distribute COL coins for pixels to multiple users.
@@ -121,18 +112,28 @@ contract ColorCoinWithPixel is ColorCoinBase {
   /// @param recipients Addresses of wallets, holding `pixels` amount of pixels.
   function sendCoinsForPixels_Array(
     uint32 pixels, address[] memory recipients
-  ) public pixelOrFounder {
+  ) public pixel {
     uint256 coins = pixels*pixelConvRate;
     uint256 total = coins * recipients.length;
 
     if (total == 0) return;
-    require(total <= accounts[pixelAccount]);
+    require(total <= coinContract.balanceOf(address(this)), "Not enough funds for pixel distribution");
 
     for (uint256 i; i < recipients.length; i++) {
       address dst = recipients[i];
-      accounts[dst] = accounts[dst].add(coins);
-    }
+      coinContract.transferFrom(address(this), dst, coins);
 
-    accounts[pixelAccount] -= total;
+    }
+  }
+
+  function relaseFunds(address _to, uint256 _amount) public pixel {
+    if (_amount > 0) {
+      coinContract.transferFrom(address(this), _to, _amount);
+    }
+  }
+
+  function destroy() public {
+    require(msg.sender == founder, "Only founder can destroy the contract");
+    selfdestruct(founder);
   }
 }

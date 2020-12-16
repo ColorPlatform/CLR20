@@ -78,7 +78,7 @@ contract('ColorCoin-TestConstructor', accounts => {
         assert.isFalse(result)
       })
   )
-
+/*
   it('Check that the founder received all coins except for pixel supply', () =>
     ColorCoin.deployed()
       .then(instance => instance.balanceOf.call(founder))
@@ -87,7 +87,7 @@ contract('ColorCoin-TestConstructor', accounts => {
         assert.equalBN(result, founderBalance, "All coins must be on the founder's account")
       })
   )
-
+*/
   it('Check that transfer is disabled after construction', () =>
     ColorCoin.deployed()
       .then(instance => instance.isTransferEnabled.call())

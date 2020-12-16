@@ -12,6 +12,7 @@ Promise.prototype.delay = function(t) {
 
 global.ColorCoin = artifacts.require('./TestColorCoin.sol')
 global.TransferCLR = artifacts.require('./TransferCLR.sol')
+global.Pixel = artifacts.require('./Pixel.sol')
 
 global.BN = web3.utils.BN
 

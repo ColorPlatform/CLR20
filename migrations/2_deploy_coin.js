@@ -1,5 +1,6 @@
 var ColorCoin = artifacts.require("./TestColorCoin.sol");
 var TransferCLR = artifacts.require("./TransferCLR.sol");
+var Pixel = artifacts.require("./Pixel.sol");
 
 module.exports = function(deployer, network, accounts) {
   console.log("Deploying Color Coin:")
@@ -21,20 +22,27 @@ module.exports = function(deployer, network, accounts) {
   var pixelSupply = new BN("20000000000000000000000000")
 
   let transferOwner = accounts[8];
+  let colorCoin = null;
 
-  deployer.deploy(ColorCoin, initialSupply, founder, admin, mintingSpeed,
-      pixelSupply, pixelAccount).then(
+  deployer.deploy(ColorCoin, initialSupply, founder, admin, mintingSpeed
+  ).then(
     function (instance) {
       console.log("CLR: Deployed at:", instance.address)
       return instance
     }
   ).then(
     function(clrInstance) {
+      colorCoin = clrInstance
       return deployer.deploy(TransferCLR, clrInstance.address, {from: transferOwner})
     }
   ).then(
     function(instance) {
       console.log("TransferCLR: Deployed at:", instance.address)
+      return deployer.deploy(Pixel, colorCoin.address, pixelAccount, {from: founder})
+    }
+  ).then(
+    function(instance) {
+      console.log("Pixel: Deployed at:", instance.address)
     }
   )
 
